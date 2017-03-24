@@ -3,6 +3,7 @@ const apiRouter = Router()
 let helpers = require('../config/helpers.js')
 
 let User = require('../db/schema.js').User
+var Listing = require('../db/schema.js').Listing
 
   
   apiRouter
@@ -46,6 +47,36 @@ let User = require('../db/schema.js').User
     })
 
     // Routes for a Model(resource) should have this structure
+
+  apiRouter
+    .get('/myListings', function(request, response) {
+      Listing.find(request.query, function(error, records) {
+          if (error) {
+            return response.status(400).json(error)
+          }
+          response.json(records)
+        })
+      })
+
+      .post('/myListings', function(request, response) {
+        var newListing = new Listing(request.body)
+        newListing.save(function(error, record) {
+          if (error) {
+            return response.status(400).json(error)
+          }
+          response.json(record)
+        })
+      })
+
+      .delete('/myListings/:_id', function(request, response) {
+         Listing.remove({ _id: req.params._id}, (err) => {
+          if(err) return res.json(err)
+          res.json({
+            msg: `record ${req.params._id} successfully deleted`,
+            _id: req.params._id
+          })
+        })  
+      })
 
 
 module.exports = apiRouter
